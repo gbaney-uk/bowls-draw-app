@@ -1,7 +1,7 @@
 {
-  "name": "Bowls Rink Picker",
-  "short_name": "Bowls",
-  "description": "Create bowls rinks and assign skips for Ampthill Bowls Club.",
+  "name": "Ampthill Bowls Club Draw App",
+  "short_name": "Bowls Draw",
+  "description": "Create bowls groups, rink matches and skip assignments for Ampthill Bowls Club.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -22,7 +22,7 @@
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icons/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
