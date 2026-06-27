@@ -1,4 +1,4 @@
-const CACHE_NAME = "bowls-rink-picker-v1";
+const CACHE_NAME = "ampthill-bowls-draw-v1";
 
 const FILES_TO_CACHE = [
   "./",
@@ -6,14 +6,13 @@ const FILES_TO_CACHE = [
   "./manifest.json",
   "./service-worker.js",
   "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/icon-512.png",
+  "./icons/icon-maskable-512.png"
 ];
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(FILES_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
   );
 
   self.skipWaiting();
@@ -40,10 +39,7 @@ self.addEventListener("fetch", event => {
 
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
-      return (
-        cachedResponse ||
-        fetch(event.request).catch(() => caches.match("./index.html"))
-      );
+      return cachedResponse || fetch(event.request).catch(() => caches.match("./index.html"));
     })
   );
 });
