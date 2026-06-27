@@ -1,10 +1,556 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Bowls PWA Test</title>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Bowls Rink Picker</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Club theme colours -->
+  <meta name="theme-color" content="#003B70" />
+
+  <!-- Apple/iPhone/iPad support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Bowls" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <style>
+    :root {
+      --club-navy: #003B70;
+      --club-green: #009B4E;
+      --club-gold: #F4C542;
+      --club-white: #FFFFFF;
+      --club-light: #F5F8FA;
+      --club-dark: #1A1A1A;
+      --danger: #B00020;
+      --border: #D8E0E8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--club-light);
+      color: var(--club-dark);
+    }
+
+    .app-shell {
+      max-width: 900px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--club-white);
+    }
+
+    header {
+      background: var(--club-navy);
+      color: var(--club-white);
+      padding: 20px;
+      border-bottom: 5px solid var(--club-gold);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--club-white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      color: var(--club-navy);
+      font-size: 1.2rem;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      flex: 1;
+      min-width: 180px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      background: var(--club-green);
+      color: var(--club-white);
+    }
+
+    button.secondary {
+      background: var(--club-navy);
+    }
+
+    button.warning {
+      background: var(--danger);
+    }
+
+    button.gold {
+      background: var(--club-gold);
+      color: var(--club-dark);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .player-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .player-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .player-name {
+      font-weight: bold;
+    }
+
+    .skip-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--club-navy);
+      font-size: 0.95rem;
+    }
+
+    .rink {
+      border: 1px solid var(--border);
+      border-left: 6px solid var(--club-green);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #FAFCFD;
+    }
+
+    .rink h3 {
+      margin: 0 0 8px;
+      color: var(--club-navy);
+    }
+
+    .rink ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .small-note {
+      color: #555;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 10px;
+      background: #EEF6FF;
+      border: 1px solid #CFE4FF;
+      color: var(--club-navy);
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.45rem;
+      }
+
+      main {
+        padding: 14px;
+      }
+
+      .input-row {
+        flex-direction: column;
+      }
+
+      button,
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+      }
+
+      .player-item {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Bowls PWA Test Version</h1>
-  <p>This is the new PWA version area.</p>
+  <div class="app-shell">
+    <header>
+      <h1>Bowls Rink Picker</h1>
+      <p>Ampthill Bowls Club rink and skip assignment tool</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>1. Add Players</h2>
+
+        <div class="input-row">
+          <input id="playerName" type="text" placeholder="Enter player name" />
+          <button onclick="addPlayer()">Add Player</button>
+        </div>
+
+        <p class="small-note">
+          Add all players first, then mark the people who should act as skips.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>2. Player List & Skips</h2>
+
+        <ul id="playerList" class="player-list"></ul>
+
+        <div class="input-row" style="margin-top: 14px;">
+          <button class="warning" onclick="clearPlayers()">Clear Players</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3. Rink Settings</h2>
+
+        <div class="input-row">
+          <label>
+            Players per rink
+            <select id="playersPerRink">
+              <option value="2">Pairs - 2 players</option>
+              <option value="3">Triples - 3 players</option>
+              <option value="4" selected>Fours - 4 players</option>
+            </select>
+          </label>
+
+          <button class="gold" onclick="generateRinks()">Generate Rinks</button>
+        </div>
+
+        <div id="statusMessage" class="status">
+          Add players to begin.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>4. Generated Rinks</h2>
+
+        <div id="rinkResults"></div>
+
+        <div class="input-row" style="margin-top: 14px;">
+          <button class="secondary" onclick="saveCurrentSession()">Save Session</button>
+          <button class="warning" onclick="clearResults()">Clear Results</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let players = JSON.parse(localStorage.getItem("bowlsPlayers")) || [];
+    let lastRinks = JSON.parse(localStorage.getItem("bowlsLastRinks")) || [];
+
+    function savePlayers() {
+      localStorage.setItem("bowlsPlayers", JSON.stringify(players));
+    }
+
+    function addPlayer() {
+      const input = document.getElementById("playerName");
+      const name = input.value.trim();
+
+      if (!name) {
+        updateStatus("Enter a player name first.");
+        return;
+      }
+
+      const exists = players.some(player => player.name.toLowerCase() === name.toLowerCase());
+
+      if (exists) {
+        updateStatus("That player is already in the list.");
+        return;
+      }
+
+      players.push({
+        name: name,
+        isSkip: false
+      });
+
+      input.value = "";
+      savePlayers();
+      renderPlayers();
+      updateStatus("Player added.");
+    }
+
+    function toggleSkip(index) {
+      players[index].isSkip = !players[index].isSkip;
+      savePlayers();
+      renderPlayers();
+    }
+
+    function removePlayer(index) {
+      players.splice(index, 1);
+      savePlayers();
+      renderPlayers();
+      updateStatus("Player removed.");
+    }
+
+    function clearPlayers() {
+      if (!confirm("Clear all players?")) return;
+
+      players = [];
+      lastRinks = [];
+      localStorage.removeItem("bowlsPlayers");
+      localStorage.removeItem("bowlsLastRinks");
+
+      renderPlayers();
+      renderRinks([]);
+      updateStatus("Players cleared.");
+    }
+
+    function renderPlayers() {
+      const list = document.getElementById("playerList");
+      list.innerHTML = "";
+
+      if (players.length === 0) {
+        list.innerHTML = "<li class='small-note'>No players added yet.</li>";
+        return;
+      }
+
+      players.forEach((player, index) => {
+        const item = document.createElement("li");
+        item.className = "player-item";
+
+        item.innerHTML = `
+          <span class="player-name">${escapeHtml(player.name)}</span>
+
+          <label class="skip-label">
+            <input type="checkbox" ${player.isSkip ? "checked" : ""} onchange="toggleSkip(${index})" />
+            Mark as skip
+          </label>
+
+          <button class="warning" onclick="removePlayer(${index})">Remove</button>
+        `;
+
+        list.appendChild(item);
+      });
+    }
+
+    function generateRinks() {
+      const playersPerRink = Number(document.getElementById("playersPerRink").value);
+
+      if (players.length < playersPerRink) {
+        updateStatus("Not enough players to create a rink.");
+        return;
+      }
+
+      const skips = shuffle(players.filter(player => player.isSkip));
+      const nonSkips = shuffle(players.filter(player => !player.isSkip));
+
+      const rinkCount = Math.ceil(players.length / playersPerRink);
+      const rinks = [];
+
+      for (let i = 0; i < rinkCount; i++) {
+        rinks.push({
+          rinkNumber: i + 1,
+          players: []
+        });
+      }
+
+      // Place skips first, one per rink where possible
+      skips.forEach((skip, index) => {
+        const rinkIndex = index % rinkCount;
+        rinks[rinkIndex].players.push({
+          name: skip.name,
+          role: "Skip"
+        });
+      });
+
+      // Fill remaining places with non-skips
+      nonSkips.forEach(player => {
+        const rink = rinks
+          .slice()
+          .sort((a, b) => a.players.length - b.players.length)[0];
+
+        rink.players.push({
+          name: player.name,
+          role: getRoleName(rink.players.length, playersPerRink)
+        });
+      });
+
+      // If there are more skips than rinks, extra skips may already be placed into rinks.
+      // Re-label first skip in each rink as Skip and others as normal players.
+      rinks.forEach(rink => {
+        let skipAssigned = false;
+
+        rink.players = rink.players.map((player, index) => {
+          if (player.role === "Skip" && !skipAssigned) {
+            skipAssigned = true;
+            return player;
+          }
+
+          if (player.role === "Skip" && skipAssigned) {
+            return {
+              name: player.name,
+              role: getRoleName(index, playersPerRink)
+            };
+          }
+
+          return {
+            name: player.name,
+            role: player.role || getRoleName(index, playersPerRink)
+          };
+        });
+      });
+
+      lastRinks = rinks;
+      localStorage.setItem("bowlsLastRinks", JSON.stringify(lastRinks));
+
+      renderRinks(rinks);
+      updateStatus("Rinks generated.");
+    }
+
+    function getRoleName(index, playersPerRink) {
+      if (playersPerRink === 2) {
+        return index === 0 ? "Lead" : "Skip";
+      }
+
+      if (playersPerRink === 3) {
+        if (index === 0) return "Lead";
+        if (index === 1) return "Second";
+        return "Skip";
+      }
+
+      if (index === 0) return "Lead";
+      if (index === 1) return "Second";
+      if (index === 2) return "Third";
+      return "Skip";
+    }
+
+    function renderRinks(rinks) {
+      const container = document.getElementById("rinkResults");
+      container.innerHTML = "";
+
+      if (!rinks || rinks.length === 0) {
+        container.innerHTML = "<p class='small-note'>No rinks generated yet.</p>";
+        return;
+      }
+
+      rinks.forEach(rink => {
+        const div = document.createElement("div");
+        div.className = "rink";
+
+        const playerRows = rink.players
+          .map(player => `<li><strong>${escapeHtml(player.role)}:</strong> ${escapeHtml(player.name)}</li>`)
+          .join("");
+
+        div.innerHTML = `
+          <h3>Rink ${rink.rinkNumber}</h3>
+          <ul>${playerRows}</ul>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function saveCurrentSession() {
+      if (!lastRinks || lastRinks.length === 0) {
+        updateStatus("No generated rinks to save yet.");
+        return;
+      }
+
+      localStorage.setItem("bowlsLastRinks", JSON.stringify(lastRinks));
+      updateStatus("Session saved on this device.");
+    }
+
+    function clearResults() {
+      lastRinks = [];
+      localStorage.removeItem("bowlsLastRinks");
+      renderRinks([]);
+      updateStatus("Results cleared.");
+    }
+
+    function updateStatus(message) {
+      document.getElementById("statusMessage").textContent = message;
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+
+      return copy;
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    // Register service worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .catch(error => {
+            console.error("Service worker registration failed:", error);
+          });
+      });
+    }
+
+    // Initial page load
+    renderPlayers();
+    renderRinks(lastRinks);
+
+    if (players.length > 0) {
+      updateStatus(`${players.length} player(s) loaded from this device.`);
+    }
+  </script>
 </body>
 </html>
