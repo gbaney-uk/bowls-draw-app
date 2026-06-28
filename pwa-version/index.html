@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Ampthill Bowls Club Draw App</title>
+
+  <link rel="manifest" href="manifest.json" />
+
+  <meta name="theme-color" content="#003B70" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Bowls Draw" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <style>
+    :root {
+      --bg: #f4f7f5;
+      --card: #ffffff;
+      --text: #1f2933;
+      --muted: #667085;
+      --border: #d0d5dd;
+
+      --club-navy: #003B70;
+      --club-green: #009B4E;
+      --club-gold: #F4C542;
+      --club-white: #ffffff;
+
+      --primary: #003B70;
+      --primary-dark: #002D59;
+      --secondary: #009B4E;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --soft: #e8f5ee;
+      --available-bg: #ecfdf3;
+      --available-border: #abd9bf;
+      --disabled-bg: #f2f4f7;
+      --disabled-text: #98a2b3;
+      --warning-bg: #fff8e6;
+      --warning-border: #f2c94c;
+      --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .app {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    header {
+      padding: 18px 0 10px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 0 10px;
+      border-bottom: 4px solid var(--club-gold);
+      margin-bottom: 14px;
+    }
+
+    .app-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      flex: 0 0 auto;
+      box-shadow: 0 4px 12px rgba(0, 45, 89, 0.18);
+      background: var(--club-navy);
+    }
+
+    .app-title-block {
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      line-height: 1.1;
+      color: var(--club-navy);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+      color: var(--club-navy);
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      font-size: 1rem;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    @media (min-width: 720px) {
+      .grid {
+        grid-template-columns: 0.9fr 1.1fr;
+      }
+
+      .settings-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      min-height: 50px;
+      touch-action: manipulation;
+    }
+
+    .btn-primary {
+      background: var(--club-navy);
+      color: #fff;
+    }
+
+    .btn-primary:active,
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--soft);
+      color: var(--club-navy);
+      border: 1px solid #c7e4d0;
+    }
+
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid #f3b5ae;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    @media (min-width: 560px) {
+      .button-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .mode-toggle {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 8px 0 12px;
+    }
+
+    @media (min-width: 560px) {
+      .mode-toggle {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .mode-option {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 14px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    .mode-option input {
+      width: auto;
+      margin-right: 8px;
+      transform: scale(1.2);
+    }
+
+    .mode-option strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .mode-option span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .mode-option.selected {
+      border-color: var(--club-navy);
+      background: var(--soft);
+    }
+
+    .suggestion-panel {
+      border: 1px solid #c7e4d0;
+      background: #fbfffd;
+      border-left: 6px solid var(--club-green);
+      border-radius: 14px;
+      padding: 12px;
+      margin: 0 0 14px;
+    }
+
+    .suggestion-title {
+      font-weight: 900;
+      color: var(--club-navy);
+      margin-bottom: 8px;
+    }
+
+    .suggestion-main {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .suggestion-detail {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .suggestion-alternative {
+      color: var(--muted);
+      font-size: 0.92rem;
+      padding-top: 6px;
+      border-top: 1px solid #dbe7df;
+      margin-top: 8px;
+    }
+
+    .suggestion-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .suggestion-small-btn {
+      min-height: 38px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      background: var(--club-green);
+      color: #fff;
+    }
+
+    .players {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .player-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fbfcfd;
+    }
+
+    .player-item.available {
+      border-color: var(--available-border);
+      background: #fbfffd;
+    }
+
+    .player-name {
+      overflow-wrap: normal;
+      word-break: normal;
+      white-space: normal;
+      font-weight: 650;
+      min-width: 0;
+    }
+
+    .available-toggle,
+    .skip-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .available-toggle {
+      border: 1px solid var(--available-border);
+      background: var(--available-bg);
+      color: var(--club-green);
+    }
+
+    .skip-toggle {
+      border: 1px solid #c7e4d0;
+      background: var(--soft);
+      color: var(--club-navy);
+    }
+
+    .skip-toggle.disabled {
+      border-color: var(--border);
+      background: var(--disabled-bg);
+      color: var(--disabled-text);
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .available-toggle input,
+    .skip-toggle input {
+      width: auto;
+      margin: 0;
+      transform: scale(1.15);
+    }
+
+    .skip-toggle.disabled input {
+      cursor: not-allowed;
+    }
+
+    .available-badge,
+    .skip-badge {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 900;
+      vertical-align: middle;
+    }
+
+    .available-badge {
+      background: var(--club-green);
+    }
+
+    .skip-badge {
+      background: var(--club-navy);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .summary.single {
+      grid-template-columns: 1fr;
+    }
+
+    .summary-box {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .summary-box .number {
+      font-size: 1.5rem;
+      font-weight: 900;
+      display: block;
+      color: var(--club-navy);
+    }
+
+    .summary-box .label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .notice {
+      display: none;
+      padding: 12px;
+      border-radius: 12px;
+      margin: 12px 0;
+      border: 1px solid var(--warning-border);
+      background: var(--warning-bg);
+      color: #5f4600;
+      font-weight: 650;
+    }
+
+    .notice.show {
+      display: block;
+    }
+
+    .result-area {
+      margin-top: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .result-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .result-card-header {
+      background: var(--club-navy);
+      color: #fff;
+      padding: 12px 14px;
+      font-weight: 900;
+      border-bottom: 3px solid var(--club-gold);
+    }
+
+    .result-card-body {
+      padding: 12px 14px;
+    }
+
+    .names-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 560px) {
+      .team-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .team {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .team-title {
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: var(--club-navy);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .small-text {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 8px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        padding: 12px;
+      }
+
+      .app-header {
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .app-logo {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+      }
+
+      h1 {
+        font-size: 1.45rem;
+      }
+
+      .subtitle {
+        font-size: 0.92rem;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .summary.single {
+        grid-template-columns: 1fr;
+      }
+
+      .player-item {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "name name"
+          "available skip";
+        gap: 12px;
+      }
+
+      .player-name {
+        grid-area: name;
+        font-size: 1.05rem;
+        line-height: 1.3;
+      }
+
+      .available-toggle {
+        grid-area: available;
+        width: 100%;
+      }
+
+      .skip-toggle {
+        grid-area: skip;
+        width: 100%;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .no-print,
+      .left-panel {
+        display: none !important;
+      }
+
+      .app {
+        max-width: none;
+      }
+
+      .grid {
+        display: block;
+      }
+
+      .card {
+        box-shadow: none;
+        border: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="app-header">
+      <img class="app-logo" src="icons/icon-192.png" alt="Ampthill Bowls Club app icon" />
+
+      <div class="app-title-block">
+        <h1>Ampthill Bowls Club Draw App</h1>
+        <div class="subtitle">Tick available players, mark skips, choose a draw type, then generate random groups or rink matches.</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card left-panel">
+        <h2>1. Players</h2>
+
+        <div class="input-row">
+          <div>
+            <label for="playerName">Player name</label>
+            <input id="playerName" type="text" autocomplete="off" placeholder="Enter a player name" />
+          </div>
+          <button class="btn-primary" id="addPlayerBtn" type="button">Add</button>
+        </div>
+
+        <div class="button-row">
+          <button class="btn-secondary" id="loadSampleBtn" type="button">Load sample names</button>
+          <button class="btn-danger" id="clearPlayersBtn" type="button">Clear all</button>
+        </div>
+
+        <div class="summary single">
+          <div class="summary-box">
+            <span class="number" id="playerCount">0</span>
+            <span class="label">Available today</span>
+          </div>
+        </div>
+
+        <ul id="playerList" class="players"></ul>
+
+        <div class="small-text" id="playerHelpText">
+          Tick <strong>Available</strong> for players at the club today. The <strong>Skip</strong> option becomes available once a player is marked as available.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2. Draw Settings</h2>
+
+        <label>Draw type</label>
+        <div class="mode-toggle">
+          <label class="mode-option selected" id="simpleModeLabel">
+            <input type="radio" name="drawMode" value="simple" checked />
+            <strong>Simple Groups</strong>
+            <span>Creates groups of 2, 3, or 4 players.</span>
+          </label>
+
+          <label class="mode-option" id="rinkModeLabel">
+            <input type="radio" name="drawMode" value="rink" />
+            <strong>Match / Rink Setup</strong>
+            <span>Creates Rink 1, Rink 2, Team A v Team B.</span>
+          </label>
+        </div>
+
+        <div id="simpleSettings">
+          <div id="groupSuggestion" class="suggestion-panel">
+            <div class="suggestion-title">Suggested grouping</div>
+            <div id="suggestionMain" class="suggestion-main">Tick available players to calculate a suggestion.</div>
+            <div id="suggestionDetail" class="suggestion-detail"></div>
+            <div id="suggestionAlternative" class="suggestion-alternative hidden"></div>
+
+            <div class="suggestion-actions">
+              <button class="suggestion-small-btn" id="useSuggestionBtn" type="button">Use suggestion</button>
+            </div>
+          </div>
+
+          <label for="groupSize">Players per group</label>
+          <select id="groupSize">
+            <option value="2">2 players</option>
+            <option value="3" selected>3 players</option>
+            <option value="4">4 players</option>
+          </select>
+        </div>
+
+        <div id="rinkSettings" class="hidden">
+          <div class="settings-row">
+            <div>
+              <label for="teamSize">Players per team</label>
+              <select id="teamSize">
+                <option value="2">2 players per team</option>
+                <option value="3" selected>3 players per team</option>
+                <option value="4">4 players per team</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="rinksAvailable">Rinks available</label>
+              <input id="rinksAvailable" type="number" min="1" max="12" step="1" value="4" />
+            </div>
+          </div>
+          <div class="small-text">
+            Rinks available is treated as the maximum. The app will only use rinks that can be fully filled.
+          </div>
+        </div>
+
+        <div class="button-row no-print">
+          <button class="btn-primary" id="generateBtn" type="button">Generate Draw</button>
+          <button class="btn-danger" id="clearResultBtn" type="button">Clear result</button>
+        </div>
+
+        <div id="notice" class="notice"></div>
+
+        <h2>3. Result</h2>
+
+        <div class="summary">
+          <div class="summary-box">
+            <span class="number" id="groupsCreated">0</span>
+            <span class="label" id="groupsCreatedLabel">Groups created</span>
+          </div>
+          <div class="summary-box">
+            <span class="number" id="remainingCount">0</span>
+            <span class="label">Remaining players</span>
+          </div>
+        </div>
+
+        <div id="resultArea" class="result-area">
+          <div class="small-text">No draw generated yet.</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer-note">
+      Version 2.0 PWA test file. Removes Last draw used from the player panel.
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "bowlsClubDrawPlayersV3";
+
+    let players = [];
+    let groupSizeManuallyChanged = false;
+    let currentSuggestedGroupSize = null;
+
+    const playerNameInput = document.getElementById("playerName");
+    const addPlayerBtn = document.getElementById("addPlayerBtn");
+    const clearPlayersBtn = document.getElementById("clearPlayersBtn");
+    const loadSampleBtn = document.getElementById("loadSampleBtn");
+    const playerList = document.getElementById("playerList");
+    const playerCount = document.getElementById("playerCount");
+
+    const simpleSettings = document.getElementById("simpleSettings");
+    const rinkSettings = document.getElementById("rinkSettings");
+    const simpleModeLabel = document.getElementById("simpleModeLabel");
+    const rinkModeLabel = document.getElementById("rinkModeLabel");
+
+    const groupSizeSelect = document.getElementById("groupSize");
+    const teamSizeSelect = document.getElementById("teamSize");
+    const rinksAvailableInput = document.getElementById("rinksAvailable");
+
+    const suggestionMain = document.getElementById("suggestionMain");
+    const suggestionDetail = document.getElementById("suggestionDetail");
+    const suggestionAlternative = document.getElementById("suggestionAlternative");
+    const useSuggestionBtn = document.getElementById("useSuggestionBtn");
+
+    const generateBtn = document.getElementById("generateBtn");
+    const clearResultBtn = document.getElementById("clearResultBtn");
+
+    const notice = document.getElementById("notice");
+    const resultArea = document.getElementById("resultArea");
+    const groupsCreated = document.getElementById("groupsCreated");
+    const groupsCreatedLabel = document.getElementById("groupsCreatedLabel");
+    const remainingCount = document.getElementById("remainingCount");
+    const playerHelpText = document.getElementById("playerHelpText");
+
+    function loadPlayers() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        const parsed = stored ? JSON.parse(stored) : [];
+
+        if (!Array.isArray(parsed)) {
+          players = [];
+        } else {
+          players = parsed
+            .map(player => {
+              if (typeof player === "string") {
+                return {
+                  name: normaliseName(player),
+                  isSkip: false,
+                  isAvailable: false
+                };
+              }
+
+              if (player && typeof player === "object" && typeof player.name === "string") {
+                return {
+                  name: normaliseName(player.name),
+                  isSkip: Boolean(player.isSkip),
+                  isAvailable: Boolean(player.isAvailable)
+                };
+              }
+
+              return null;
+            })
+            .filter(player => player && player.name);
+        }
+      } catch {
+        players = [];
+      }
+
+      renderPlayers();
+    }
+
+    function savePlayers() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
+      } catch {
+        /*
+          Some iPad/iPhone file preview modes block localStorage for downloaded HTML files.
+          The app should still work during the current session even if saving is blocked.
+        */
+      }
+    }
+
+    function normaliseName(name) {
+      return name.trim().replace(/\s+/g, " ");
+    }
+
+    function getAvailablePlayers() {
+      return players.filter(player => player.isAvailable);
+    }
+
+    function getPlayerName(player) {
+      if (typeof player === "string") {
+        return player;
+      }
+
+      return player && player.name ? player.name : "";
+    }
+
+    function getPlayerDisplayName(player) {
+      const name = getPlayerName(player);
+      const isSkip = Boolean(player && typeof player === "object" && player.isSkip);
+      return isSkip ? `${name} (Skip)` : name;
+    }
+
+    function addPlayer() {
+      const name = normaliseName(playerNameInput.value);
+
+      if (!name) {
+        showNotice("Enter a player name first.");
+        return;
+      }
+
+      const alreadyExists = players.some(p => getPlayerName(p).toLowerCase() === name.toLowerCase());
+
+      if (alreadyExists) {
+        showNotice("That player is already in the list.");
+        return;
+      }
+
+      players.push({
+        name,
+        isSkip: false,
+        isAvailable: true
+      });
+
+      groupSizeManuallyChanged = false;
+      renderPlayers();
+      savePlayers();
+      clearResult();
+      playerNameInput.value = "";
+      playerNameInput.focus();
+      hideNotice();
+    }
+
+    function toggleSkip(index) {
+      if (!players[index].isAvailable) {
+        return;
+      }
+
+      players[index].isSkip = !players[index].isSkip;
+      renderPlayers();
+      savePlayers();
+      clearResult();
+    }
+
+    function toggleAvailable(index) {
+      players[index].isAvailable = !players[index].isAvailable;
+
+      if (!players[index].isAvailable) {
+        players[index].isSkip = false;
+      }
+
+      groupSizeManuallyChanged = false;
+      renderPlayers();
+      savePlayers();
+      clearResult();
+    }
+
+    function clearPlayers() {
+      if (players.length === 0) {
+        showNotice("There are no players to clear.");
+        return;
+      }
+
+      const confirmed = confirm("Clear all players?");
+
+      if (!confirmed) {
+        return;
+      }
+
+      players = [];
+      groupSizeManuallyChanged = false;
+      renderPlayers();
+      savePlayers();
+      clearResult();
+      hideNotice();
+    }
+
+    function loadSampleNames() {
+      const sampleNames = [
+        "Gary BL", "Gary Ba", "Brendan", "Sally", "Mike", "Alan", "Mark", "Rob", "Justin", "Chris",
+        "Tony", "Steve", "Charles", "Nicolette", "Pauline", "John", "Dom", "Matt", "Nigel", "Sam", "Jacqui"
+      ];
+
+      players = sampleNames.map(name => ({
+        name,
+        isSkip: false,
+        isAvailable: false
+      }));
+
+      groupSizeManuallyChanged = false;
+      renderPlayers();
+      savePlayers();
+      clearResult();
+      hideNotice();
+    }
+
+    function renderPlayers() {
+      playerList.innerHTML = "";
+
+      const availablePlayers = getAvailablePlayers();
+      playerCount.textContent = availablePlayers.length;
+
+      if (players.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "small-text";
+        empty.textContent = "No players added yet.";
+        playerList.appendChild(empty);
+
+        playerHelpText.innerHTML = "Tick <strong>Available</strong> for players at the club today. The <strong>Skip</strong> option becomes available once a player is marked as available.";
+        updateGroupingSuggestion();
+        return;
+      }
+
+      playerHelpText.innerHTML = `Total saved players: <strong>${players.length}</strong>. Available today: <strong>${availablePlayers.length}</strong>. Tick <strong>Available</strong> for players at the club today. Tick <strong>Skip</strong> for available players who should be used as skips/captains.`;
+
+      players.forEach((player, index) => {
+        const li = document.createElement("li");
+        li.className = player.isAvailable ? "player-item available" : "player-item";
+
+        const name = document.createElement("span");
+        name.className = "player-name";
+        name.textContent = `${index + 1}. ${getPlayerName(player)}`;
+
+        if (player.isAvailable) {
+          const availableBadge = document.createElement("span");
+          availableBadge.className = "available-badge";
+          availableBadge.textContent = "Available";
+          name.appendChild(availableBadge);
+        }
+
+        if (player.isSkip) {
+          const skipBadge = document.createElement("span");
+          skipBadge.className = "skip-badge";
+          skipBadge.textContent = "Skip";
+          name.appendChild(skipBadge);
+        }
+
+        const availableLabel = document.createElement("label");
+        availableLabel.className = "available-toggle";
+
+        const availableCheckbox = document.createElement("input");
+        availableCheckbox.type = "checkbox";
+        availableCheckbox.checked = Boolean(player.isAvailable);
+        availableCheckbox.addEventListener("change", () => toggleAvailable(index));
+
+        const availableText = document.createElement("span");
+        availableText.textContent = "Available";
+
+        availableLabel.appendChild(availableCheckbox);
+        availableLabel.appendChild(availableText);
+
+        const skipLabel = document.createElement("label");
+        skipLabel.className = player.isAvailable ? "skip-toggle" : "skip-toggle disabled";
+
+        const skipCheckbox = document.createElement("input");
+        skipCheckbox.type = "checkbox";
+        skipCheckbox.checked = Boolean(player.isSkip);
+        skipCheckbox.disabled = !player.isAvailable;
+        skipCheckbox.addEventListener("change", () => toggleSkip(index));
+
+        const skipText = document.createElement("span");
+        skipText.textContent = "Skip";
+
+        skipLabel.appendChild(skipCheckbox);
+        skipLabel.appendChild(skipText);
+
+        li.appendChild(name);
+        li.appendChild(availableLabel);
+        li.appendChild(skipLabel);
+        playerList.appendChild(li);
+      });
+
+      updateGroupingSuggestion();
+    }
+
+    function calculateGroupingOptions(availableCount) {
+      const preferredGroupSizes = [4, 3];
+
+      const options = preferredGroupSizes
+        .map(size => {
+          const groups = Math.floor(availableCount / size);
+          const playersUsed = groups * size;
+          const remaining = availableCount - playersUsed;
+
+          return {
+            size,
+            groups,
+            playersUsed,
+            remaining,
+            isValid: groups > 0
+          };
+        })
+        .filter(option => option.isValid);
+
+      if (availableCount === 2) {
+        options.push({
+          size: 2,
+          groups: 1,
+          playersUsed: 2,
+          remaining: 0,
+          isValid: true
+        });
+      }
+
+      return options;
+    }
+
+    function getRecommendedGrouping(availableCount) {
+      const options = calculateGroupingOptions(availableCount);
+
+      if (options.length === 0) {
+        return null;
+      }
+
+      const exactFour = options.find(option => option.size === 4 && option.remaining === 0);
+      if (exactFour) return exactFour;
+
+      const exactThree = options.find(option => option.size === 3 && option.remaining === 0);
+      if (exactThree) return exactThree;
+
+      const fourWithSmallRemainder = options.find(option => option.size === 4 && option.remaining <= 2);
+      if (fourWithSmallRemainder) return fourWithSmallRemainder;
+
+      const threeWithSmallRemainder = options.find(option => option.size === 3 && option.remaining <= 2);
+      if (threeWithSmallRemainder) return threeWithSmallRemainder;
+
+      const sorted = [...options].sort((a, b) => {
+        if (a.remaining !== b.remaining) {
+          return a.remaining - b.remaining;
+        }
+
+        return b.size - a.size;
+      });
+
+      return sorted[0];
+    }
+
+    function getAlternativeGrouping(availableCount, recommended) {
+      const options = calculateGroupingOptions(availableCount);
+
+      if (!recommended) {
+        return null;
+      }
+
+      return options.find(option => option.size !== recommended.size) || null;
+    }
+
+    function formatMainGrouping(option) {
+      const groupWord = option.groups === 1 ? "group" : "groups";
+      return `${option.groups} ${groupWord} of ${option.size}`;
+    }
+
+    function formatRemaining(option) {
+      if (option.remaining === 0) {
+        return `Uses all ${option.playersUsed} available players`;
+      }
+
+      const playerWord = option.remaining === 1 ? "player" : "players";
+      return `${option.remaining} ${playerWord} left over`;
+    }
+
+    function formatAlternative(option) {
+      const groupWord = option.groups === 1 ? "group" : "groups";
+
+      if (option.remaining === 0) {
+        return `Alternative: ${option.groups} ${groupWord} of ${option.size}, uses all ${option.playersUsed}`;
+      }
+
+      const playerWord = option.remaining === 1 ? "player" : "players";
+      return `Alternative: ${option.groups} ${groupWord} of ${option.size}, ${option.remaining} ${playerWord} left over`;
+    }
+
+    function updateGroupingSuggestion() {
+      const availableCount = getAvailablePlayers().length;
+      const recommended = getRecommendedGrouping(availableCount);
+      const alternative = getAlternativeGrouping(availableCount, recommended);
+
+      currentSuggestedGroupSize = recommended ? recommended.size : null;
+
+      suggestionAlternative.classList.add("hidden");
+      suggestionAlternative.textContent = "";
+
+      if (availableCount < 2) {
+        suggestionMain.textContent = "Tick at least 2 available players.";
+        suggestionDetail.textContent = "";
+        useSuggestionBtn.disabled = true;
+        return;
+      }
+
+      if (!recommended) {
+        suggestionMain.textContent = `${availableCount} available player(s).`;
+        suggestionDetail.textContent = "No practical 3 or 4 player grouping found.";
+        useSuggestionBtn.disabled = true;
+        return;
+      }
+
+      suggestionMain.textContent = formatMainGrouping(recommended);
+      suggestionDetail.textContent = formatRemaining(recommended);
+
+      if (alternative) {
+        suggestionAlternative.textContent = formatAlternative(alternative);
+        suggestionAlternative.classList.remove("hidden");
+      }
+
+      if (!groupSizeManuallyChanged) {
+        groupSizeSelect.value = String(recommended.size);
+      }
+
+      useSuggestionBtn.disabled = false;
+    }
+
+    function useSuggestedGroupSize() {
+      if (!currentSuggestedGroupSize) {
+        return;
+      }
+
+      groupSizeManuallyChanged = false;
+      groupSizeSelect.value = String(currentSuggestedGroupSize);
+      updateGroupingSuggestion();
+      clearResult();
+    }
+
+    function getDrawMode() {
+      const selected = document.querySelector("input[name='drawMode']:checked");
+      return selected ? selected.value : "simple";
+    }
+
+    function handleModeChange() {
+      const mode = getDrawMode();
+
+      if (mode === "simple") {
+        simpleSettings.classList.remove("hidden");
+        rinkSettings.classList.add("hidden");
+        simpleModeLabel.classList.add("selected");
+        rinkModeLabel.classList.remove("selected");
+        groupsCreatedLabel.textContent = "Groups created";
+        updateGroupingSuggestion();
+      } else {
+        simpleSettings.classList.add("hidden");
+        rinkSettings.classList.remove("hidden");
+        simpleModeLabel.classList.remove("selected");
+        rinkModeLabel.classList.add("selected");
+        groupsCreatedLabel.textContent = "Rinks created";
+      }
+
+      clearResult();
+      hideNotice();
+    }
+
+    function shuffleArray(array) {
+      const copy = [...array];
+
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+
+      return copy;
+    }
+
+    function createUnitsWithSkips(sourcePlayers, unitCount, unitSize) {
+      const skips = shuffleArray(sourcePlayers.filter(player => player.isSkip));
+      const nonSkips = shuffleArray(sourcePlayers.filter(player => !player.isSkip));
+      const units = Array.from({ length: unitCount }, () => []);
+
+      for (let i = 0; i < units.length; i++) {
+        if (skips.length > 0) {
+          units[i].push(skips.shift());
+        }
+      }
+
+      const remainingPool = shuffleArray([...skips, ...nonSkips]);
+
+      for (const unit of units) {
+        while (unit.length < unitSize && remainingPool.length > 0) {
+          unit.push(remainingPool.shift());
+        }
+      }
+
+      return {
+        units,
+        remainingPlayers: remainingPool
+      };
+    }
+
+    function countAssignedSkips(units) {
+      return units.flat().filter(player => player.isSkip).length;
+    }
+
+    function updateSkipNotice(requiredSkipSlots, assignedSkipCount, sourcePlayers) {
+      const totalMarkedSkips = sourcePlayers.filter(player => player.isSkip).length;
+
+      if (totalMarkedSkips === 0) {
+        hideNotice();
+        return;
+      }
+
+      if (assignedSkipCount < requiredSkipSlots) {
+        showNotice(`Only ${assignedSkipCount} available marked skip(s) were assigned for ${requiredSkipSlots} group/team slot(s). Mark more available players as Skip if each group/team needs one.`);
+        return;
+      }
+
+      hideNotice();
+    }
+
+    function generateDraw() {
+      const mode = getDrawMode();
+      const availablePlayers = getAvailablePlayers();
+
+      if (availablePlayers.length < 2) {
+        showNotice("Tick at least 2 players as Available before generating a draw.");
+        return;
+      }
+
+      if (mode === "simple") {
+        generateSimpleGroups(availablePlayers);
+      } else {
+        generateRinkMatches(availablePlayers);
+      }
+    }
+
+    function generateSimpleGroups(availablePlayers) {
+      const groupSize = Number(groupSizeSelect.value);
+
+      const fullGroupCount = Math.floor(availablePlayers.length / groupSize);
+      const playersUsed = fullGroupCount * groupSize;
+
+      if (fullGroupCount === 0) {
+        showNotice(`Not enough available players. You need at least ${groupSize} available players to make one group.`);
+        return;
+      }
+
+      const draw = createUnitsWithSkips(availablePlayers, fullGroupCount, groupSize);
+      const groups = draw.units;
+      const remainingPlayers = draw.remainingPlayers;
+      const assignedSkipCount = countAssignedSkips(groups);
+
+      renderSimpleResult(groups, remainingPlayers);
+      updateSkipNotice(groups.length, assignedSkipCount, availablePlayers);
+    }
+
+    function generateRinkMatches(availablePlayers) {
+      const teamSize = Number(teamSizeSelect.value);
+      const rinksAvailable = Number(rinksAvailableInput.value);
+      const playersPerRink = teamSize * 2;
+
+      if (!Number.isInteger(rinksAvailable) || rinksAvailable < 1) {
+        showNotice("Enter at least 1 rink available.");
+        return;
+      }
+
+      const possibleFullRinks = Math.floor(availablePlayers.length / playersPerRink);
+      const rinksToUse = Math.min(rinksAvailable, possibleFullRinks);
+
+      if (rinksToUse === 0) {
+        showNotice(`Not enough available players. You need at least ${playersPerRink} available players for one rink with ${teamSize} players per team.`);
+        return;
+      }
+
+      const teamCount = rinksToUse * 2;
+      const draw = createUnitsWithSkips(availablePlayers, teamCount, teamSize);
+      const teams = draw.units;
+      const remainingPlayers = draw.remainingPlayers;
+      const assignedSkipCount = countAssignedSkips(teams);
+
+      const rinks = [];
+
+      for (let i = 0; i < rinksToUse; i++) {
+        rinks.push({
+          rinkNumber: i + 1,
+          teamA: teams[i * 2],
+          teamB: teams[(i * 2) + 1]
+        });
+      }
+
+      renderRinkResult(rinks, remainingPlayers);
+      updateSkipNotice(teamCount, assignedSkipCount, availablePlayers);
+    }
+
+    function renderSimpleResult(groups, remainingPlayers) {
+      resultArea.innerHTML = "";
+      groupsCreated.textContent = groups.length;
+      remainingCount.textContent = remainingPlayers.length;
+
+      groups.forEach((group, index) => {
+        const card = createResultCard(`Group ${index + 1}`);
+        const list = createNamesList(group);
+        card.body.appendChild(list);
+        resultArea.appendChild(card.card);
+      });
+
+      if (remainingPlayers.length > 0) {
+        const card = createResultCard("Remaining Available Players");
+        const list = createNamesList(remainingPlayers);
+        card.body.appendChild(list);
+        resultArea.appendChild(card.card);
+      }
+    }
+
+    function renderRinkResult(rinks, remainingPlayers) {
+      resultArea.innerHTML = "";
+      groupsCreated.textContent = rinks.length;
+      remainingCount.textContent = remainingPlayers.length;
+
+      rinks.forEach((rink) => {
+        const card = createResultCard(`Rink ${rink.rinkNumber}`);
+        const teamGrid = document.createElement("div");
+        teamGrid.className = "team-grid";
+
+        const teamA = createTeamBlock("Team A", rink.teamA);
+        const teamB = createTeamBlock("Team B", rink.teamB);
+
+        teamGrid.appendChild(teamA);
+        teamGrid.appendChild(teamB);
+        card.body.appendChild(teamGrid);
+        resultArea.appendChild(card.card);
+      });
+
+      if (remainingPlayers.length > 0) {
+        const card = createResultCard("Remaining Available Players");
+        const list = createNamesList(remainingPlayers);
+        card.body.appendChild(list);
+        resultArea.appendChild(card.card);
+      }
+    }
+
+    function createResultCard(title) {
+      const card = document.createElement("div");
+      card.className = "result-card";
+
+      const header = document.createElement("div");
+      header.className = "result-card-header";
+      header.textContent = title;
+
+      const body = document.createElement("div");
+      body.className = "result-card-body";
+
+      card.appendChild(header);
+      card.appendChild(body);
+
+      return { card, body };
+    }
+
+    function createNamesList(names) {
+      const ol = document.createElement("ol");
+      ol.className = "names-list";
+
+      names.forEach(name => {
+        const li = document.createElement("li");
+        li.textContent = getPlayerDisplayName(name);
+        ol.appendChild(li);
+      });
+
+      return ol;
+    }
+
+    function createTeamBlock(title, names) {
+      const div = document.createElement("div");
+      div.className = "team";
+
+      const heading = document.createElement("div");
+      heading.className = "team-title";
+      heading.textContent = title;
+
+      const list = createNamesList(names);
+
+      div.appendChild(heading);
+      div.appendChild(list);
+
+      return div;
+    }
+
+    function clearResult() {
+      resultArea.innerHTML = '<div class="small-text">No draw generated yet.</div>';
+      groupsCreated.textContent = "0";
+      remainingCount.textContent = "0";
+    }
+
+    function showNotice(message) {
+      notice.textContent = message;
+      notice.classList.add("show");
+    }
+
+    function hideNotice() {
+      notice.textContent = "";
+      notice.classList.remove("show");
+    }
+
+    addPlayerBtn.addEventListener("click", addPlayer);
+
+    playerNameInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        addPlayer();
+      }
+    });
+
+    clearPlayersBtn.addEventListener("click", clearPlayers);
+    loadSampleBtn.addEventListener("click", loadSampleNames);
+    generateBtn.addEventListener("click", generateDraw);
+    clearResultBtn.addEventListener("click", clearResult);
+
+    useSuggestionBtn.addEventListener("click", useSuggestedGroupSize);
+
+    groupSizeSelect.addEventListener("change", () => {
+      groupSizeManuallyChanged = true;
+
+      if (currentSuggestedGroupSize && Number(groupSizeSelect.value) === currentSuggestedGroupSize) {
+        groupSizeManuallyChanged = false;
+      }
+
+      updateGroupingSuggestion();
+      clearResult();
+    });
+
+    document.querySelectorAll("input[name='drawMode']").forEach(radio => {
+      radio.addEventListener("change", handleModeChange);
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .catch(error => {
+            console.error("Service worker registration failed:", error);
+          });
+      });
+    }
+
+    loadPlayers();
+    clearResult();
+    updateGroupingSuggestion();
+  </script>
+</body>
+</html>
